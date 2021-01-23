@@ -11,7 +11,11 @@ DATA_PATH = '../processed_data/'
 
 price_data = pd.read_csv(DATA_PATH + 'priceData.csv')
 nope_data = pd.read_csv(DATA_PATH + 'parsedNetDelta2020-08.csv')
+nope_data['timestamp'] = pd.to_datetime(nope_data['timestamp'])
+price_data['timestamp'] = pd.to_datetime(price_data['timestamp'])
 df = pd.merge(nope_data, price_data, on="timestamp")
+
+df['time'] = df['timestamp'].dt.strftime("%H:%M")
 
 deltaNope = 0.0
 deltaNope2 = 0.0
@@ -37,7 +41,7 @@ for index, row in df.iterrows():
     else:
         # ignore the first entry in each day, as we just want to compare the data within a single day, and not the end
         # of the previous day to the open of the current
-        if('9:35' in row['timestamp']):
+        if('9:35' in row['time']):
             #print('Skipping entry:' , row['timestamp'])
             lastNope = row['NOPE_allVolume']
             lastPrice = row['active_underlying_price']
